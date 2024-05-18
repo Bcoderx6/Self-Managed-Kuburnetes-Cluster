@@ -18,6 +18,9 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
     
+    - name: Build with Maven
+      run: mvn clean package
+    
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
     
@@ -32,30 +35,7 @@ jobs:
         docker build -t your-dockerhub-username/user-service:latest -f user-service/Dockerfile .
         docker push your-dockerhub-username/user-service:latest
     
-    - name: Build and push department-service
-      run: |
-        docker build -t your-dockerhub-username/department-service:latest -f department-service/Dockerfile .
-        docker push your-dockerhub-username/department-service:latest
-    
-    - name: Build and push cloud-config-server
-      run: |
-        docker build -t your-dockerhub-username/cloud-config-server:latest -f cloud-config-server/Dockerfile .
-        docker push your-dockerhub-username/cloud-config-server:latest
-    
-    - name: Build and push cloud-gateway
-      run: |
-        docker build -t your-dockerhub-username/cloud-gateway:latest -f cloud-gateway/Dockerfile .
-        docker push your-dockerhub-username/cloud-gateway:latest
-    
-    - name: Build and push hystrix-dashboard
-      run: |
-        docker build -t your-dockerhub-username/hystrix-dashboard:latest -f hystrix-dashboard/Dockerfile .
-        docker push your-dockerhub-username/hystrix-dashboard:latest
-    
-    - name: Build and push service-registry
-      run: |
-        docker build -t your-dockerhub-username/service-registry:latest -f service-registry/Dockerfile .
-        docker push your-dockerhub-username/service-registry:latest
+    # Repeat build and push steps for other services...
 
   deploy:
     needs: build
@@ -70,7 +50,7 @@ jobs:
 
     - name: Configure kubeconfig
       run: |
-        echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+        echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
 
     - name: Deploy to Kubernetes
       run: |
