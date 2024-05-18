@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
     
     - name: Set up JDK 11
       uses: actions/setup-java@v2
@@ -35,13 +36,37 @@ jobs:
         docker build -t your-dockerhub-username/user-service:latest -f user-service/Dockerfile .
         docker push your-dockerhub-username/user-service:latest
     
-    # Repeat build and push steps for other services...
+    - name: Build and push department-service
+      run: |
+        docker build -t your-dockerhub-username/department-service:latest -f department-service/Dockerfile .
+        docker push your-dockerhub-username/department-service:latest
+    
+    - name: Build and push cloud-config-server
+      run: |
+        docker build -t your-dockerhub-username/cloud-config-server:latest -f cloud-config-server/Dockerfile .
+        docker push your-dockerhub-username/cloud-config-server:latest
+    
+    - name: Build and push cloud-gateway
+      run: |
+        docker build -t your-dockerhub-username/cloud-gateway:latest -f cloud-gateway/Dockerfile .
+        docker push your-dockerhub-username/cloud-gateway:latest
+    
+    - name: Build and push hystrix-dashboard
+      run: |
+        docker build -t your-dockerhub-username/hystrix-dashboard:latest -f hystrix-dashboard/Dockerfile .
+        docker push your-dockerhub-username/hystrix-dashboard:latest
+    
+    - name: Build and push service-registry
+      run: |
+        docker build -t your-dockerhub-username/service-registry:latest -f service-registry/Dockerfile .
+        docker push your-dockerhub-username/service-registry:latest
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
     
     - name: Set up kubectl
       uses: azure/setup-kubectl@v1
